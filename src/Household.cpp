@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include "repast_hpc/Random.h"
 
-Household::Household(repast::AgentId id, int a, int deAge, int mStorage)
+Household::Household(repast::AgentId id, int a, int deAge, int mStorage, float tFact)
 {
 	householdId = id;
 	age = a;
@@ -14,6 +14,7 @@ Household::Household(repast::AgentId id, int a, int deAge, int mStorage)
 	assignedField = NULL;
 	deathsWitnessed = 0;
 	needs = 800; //hardcode rn, initialise only
+	tensionFactor = tFact;
 }
 
 Household::~Household()

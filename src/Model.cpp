@@ -92,13 +92,16 @@ AnasaziModel::AnasaziModel(std::string propsFile, int argc, char** argv, boost::
 
 	year = param.startYear;
 	stopAt = param.endYear - param.startYear + 1;
+
+	//repast::Random* randomSource = repast::Random::instance(); // ???
+
 	fissionGen = new repast::DoubleUniformGenerator(repast::Random::instance()->createUniDoubleGenerator(0,1));
 	deathAgeGen = new repast::IntUniformGenerator(repast::Random::instance()->createUniIntGenerator(param.minDeathAge,param.maxDeathAge));
 	yieldGen = new repast::NormalGenerator(repast::Random::instance()->createNormalGenerator(0,param.annualVariance));
 	soilGen = new repast::NormalGenerator(repast::Random::instance()->createNormalGenerator(0,param.spatialVariance));
 	initAgeGen = new repast::IntUniformGenerator(repast::Random::instance()->createUniIntGenerator(0,param.minDeathAge));
 	initMaizeGen = new repast::IntUniformGenerator(repast::Random::instance()->createUniIntGenerator(param.initMinCorn,param.initMaxCorn));
-
+	initTensionGen = new repast::DoubleUniformGenerator(repast::Random::instance()->createUniDoubleGenerator(0.0, 1.0));
 	string resultFile = props->getProperty("result.file");
 	out.open(resultFile);
 	out << "Year,Number-of-Households" << endl;
@@ -141,7 +144,8 @@ void AnasaziModel::initAgents()
 		repast::AgentId id(houseID, rank, 2);
 		int initAge = initAgeGen->next();
 		int mStorage = initMaizeGen->next();
-		Household* agent = new Household(id, initAge, deathAgeGen->next(), mStorage);
+		float tFact = initTensionGen->next();
+		Household* agent = new Household(id, initAge, deathAgeGen->next(), mStorage, tFact);
 		context.addAgent(agent);
 
 		bool houseNotFound = true;
@@ -552,7 +556,7 @@ void  AnasaziModel::updateLocationProperties()
 		}
 	}
 }
-
+s
 void AnasaziModel::updateHouseholdProperties()
 {
 	int noOfAgents = context.size();

@@ -16,9 +16,10 @@ private:
 	int deathAge;
 	int deathsWitnessed;
 	float needs;
+	float tensionFactor;
 
 public:
-	Household(repast::AgentId id,int a, int deathAge, int mStorage);
+	Household(repast::AgentId id,int a, int deathAge, int mStorage, float tFact);
 	~Household();
 
 	/* Required Getters */
