@@ -47,6 +47,8 @@ private:
 	int expectedHarvest;
 	double soilQuality;
 
+	int recentDeath;
+
 
 public:
 	Location(repast::AgentId FieldID, double soilQual);
@@ -67,6 +69,8 @@ public:
 
 	void checkWater(bool existStreams, bool existAlluvium, int x, int y, int year);
 	void calculateYield(int y, double Ha, double gen);
+
+	bool getDeath();
 };
 
 #endif

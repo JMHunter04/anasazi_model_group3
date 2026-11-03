@@ -75,7 +75,7 @@ AnasaziModel::AnasaziModel(std::string propsFile, int argc, char** argv, boost::
 	param.endYear = repast::strToInt(props->getProperty("end.year"));
 	param.maxStorageYear = repast::strToInt(props->getProperty("max.store.year"));
 	param.maxStorage = repast::strToInt(props->getProperty("max.storage"));
-	param.householdNeed = repast::strToInt(props->getProperty("household.need"));
+	param.householdBaseNeed = repast::strToInt(props->getProperty("household.baseNeed"));
 	param.minFissionAge = repast::strToInt(props->getProperty("min.fission.age"));
 	param.maxFissionAge = repast::strToInt(props->getProperty("max.fission.age"));
 	param.minDeathAge = repast::strToInt(props->getProperty("min.death.age"));
@@ -102,6 +102,8 @@ AnasaziModel::AnasaziModel(std::string propsFile, int argc, char** argv, boost::
 	string resultFile = props->getProperty("result.file");
 	out.open(resultFile);
 	out << "Year,Number-of-Households" << endl;
+
+	float needs = param.householdBaseNeed;
 }
 
 AnasaziModel::~AnasaziModel()
@@ -568,6 +570,7 @@ void AnasaziModel::updateHouseholdProperties()
         }
         else
         {
+			needs = household->checkDeath(param.householdBaseNeed); //check death will update tension and new household need
             if(household->fission(param.minFissionAge,param.maxFissionAge, fissionGen->next(), param.fertilityProbability))
             {
                 int rank = repast::RepastProcess::instance()->rank();
@@ -584,13 +587,13 @@ void AnasaziModel::updateHouseholdProperties()
             }
 
             bool fieldFound = true;
-            if(!(household->checkMaize(param.householdNeed)))
+            if(!(household->checkMaize(needs))) // will require new need
             {
                 fieldFound = fieldSearch(household);
             }
             if(fieldFound)
             {
-                household->nextYear(param.householdNeed);
+                household->nextYear(needs);
             }
             
         }
@@ -629,7 +632,7 @@ bool AnasaziModel::fieldSearch(Household* household)
 
 			if(tempLoc->getState() == 0)
 			{
-				if(tempLoc->getExpectedYield() >= param.householdNeed)
+				if(tempLoc->getExpectedYield() >= needs)
 				{
 					std::vector<int> loc;
 					locationSpace->getLocation(tempLoc->getId(), loc);
@@ -783,4 +786,54 @@ bool AnasaziModel::relocateHousehold(Household* household)
 			householdSpace->moveTo(household->getId(),repast::Point<int>(futureHouseIntLocation));
 			return true;
 		}
+}
+
+float AnasaziModel::checkDeath(Household* household)
+{
+	/******** Choose Field ********/
+	std::vector<int> houseIntLocation;
+	householdSpace->getLocation(household->getId(), houseIntLocation);
+	repast::Point<int> center(houseIntLocation);
+
+	std::vector<Location*> neighbouringLocations;
+	std::vector<Location*> checkedLocations;
+	repast::Moore2DGridQuery<Location> moore2DQuery(locationSpace);
+
+	int maxRangeX = std::max(std::abs(houseIntLocation[0] - boardSizeX), houseIntLocation[0]);
+	int maxRangeY = std::max(std::abs(houseIntLocation[1] - boardSizeY), houseIntLocation[1]);
+	int maxRange = std::max(maxRangeX, maxRangeY);
+
+	int range = 1;
+	while(range <= maxRange)
+	{
+		neighbouringLocations.clear();
+		moore2DQuery.query(houseIntLocation, range, false, neighbouringLocations);
+
+		for (std::vector<Location*>::iterator it = neighbouringLocations.begin() ; it != neighbouringLocations.end(); ++it)
+		{
+			Location* tempLoc = (&**it);
+			if (std::find(checkedLocations.begin(), checkedLocations.end(), tempLoc) != checkedLocations.end())
+			{
+				continue;
+			}
+			checkedLocations.push_back(tempLoc);
+
+			// Access attributes getter methods
+
+			Location* tempLoc = (&**it);
+			//might need “checkedLocations” stuff
+
+			if(tempLoc->getDeath() == 1){
+
+				totalDeathsWitnessed++;
+				
+		}
+		range++;
+	}
+	for(int i = 0; i < totalDeathsWitnessed; ++i)
+    {
+        household->witnessDeath();
+    }
+	needs = household->calculateNeeds(param.baseNeed);
+	return needs;
 }

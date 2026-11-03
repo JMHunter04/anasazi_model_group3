@@ -14,6 +14,8 @@ private:
 	int maizeStorage;
 	int age;
 	int deathAge;
+	int deathsWitnessed;
+	float needs;
 
 public:
 	Household(repast::AgentId id,int a, int deathAge, int mStorage);
@@ -26,11 +28,14 @@ public:
 	/* Getters specific to this kind of Agent */
 	Location* getAssignedField(){return assignedField; }
 	int splitMaizeStored(int percentage);
-	bool checkMaize(int needs);
+	bool checkMaize(float needs);
 	bool death();
 	bool fission(int minFissionAge, int maxFissionAge, double gen, double fProb);
-	void nextYear(int needs);
+	void nextYear(float needs);
 	void chooseField(Location* Field);
+	void witnessDeath();
+	void grieve();
+	float calculateNeeds(int baseNeed);
 };
 
 #endif

@@ -12,6 +12,7 @@ Location::Location(repast::AgentId FieldID, double soilQual){
 	soilQuality = 1 + soilQual;
 	isWater = false;
 	state = 0;
+	recentDeath = 0;
 }
 
 Location::Location(){
@@ -86,4 +87,10 @@ void Location::checkWater(bool existStreams, bool existAlluvium, int x, int y, i
 void Location::addWaterSource(int waterType, int startYear, int endYear)
 {
 	waterSources.push_back({waterType, startYear, endYear});
+}
+
+//get recent death information
+bool Location::getDeath()
+{
+	return recentDeath;
 }

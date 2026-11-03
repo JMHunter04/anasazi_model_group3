@@ -12,6 +12,8 @@ Household::Household(repast::AgentId id, int a, int deAge, int mStorage)
 	deathAge = deAge;
 	maizeStorage = mStorage;
 	assignedField = NULL;
+	deathsWitnessed = 0;
+	needs = 800; //hardcode rn, initialise only
 }
 
 Household::~Household()
@@ -27,7 +29,7 @@ int Household::splitMaizeStored(int percentage)
 	return maizeEndowment;
 }
 
-bool Household::checkMaize(int needs)
+bool Household::checkMaize(float needs) //inefficiency in naming etc. needs can now be stored in this class
 {
 	if((assignedField->getExpectedYield() + maizeStorage) > needs)
 	{
@@ -63,7 +65,7 @@ bool Household::fission(int minFissionAge, int maxFissionAge, double gen, double
 	}
 }
 
-void Household::nextYear(int needs)
+void Household::nextYear(float needs)
 {
 	age++;
 	maizeStorage = assignedField->getExpectedYield() + maizeStorage - needs;
@@ -78,4 +80,26 @@ void Household::chooseField(Location* Field)
 	Field->setState(2);
 
 	assignedField = Field;
+}
+
+void Household::witnessDeath()
+{
+	if(deathsWitnessed <10){
+		deathsWitnessed++;
+	}
+}
+
+void Household::grieve()
+{
+	if(deathsWitnessed >0){
+		deathsWitnessed--;
+	}
+}
+
+float Household::calculateNeeds(int baseNeed) 
+{
+	float tension = deathsWitnessed * 0.1;
+	needs = baseNeed + tension * tensionFactor * baseNeed;
+
+	return needs;
 }
