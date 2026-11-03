@@ -833,13 +833,14 @@ float AnasaziModel::checkDeath(Household* household)
 
 				totalDeathsWitnessed++;
 				
-		}
+			}
 		range++;
-	}
-	for(int i = 0; i < totalDeathsWitnessed; ++i)
-    {
-        household->witnessDeath();
-    }
+		}
+		for(int i = 0; i < totalDeathsWitnessed; ++i)
+   		{
+     		household->witnessDeath();
+   		}
 	float needs = household->calculateNeeds(param.baseNeed);
 	return needs;
+	}
 }
