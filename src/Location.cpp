@@ -94,3 +94,8 @@ bool Location::getDeath()
 {
 	return recentDeath;
 }
+
+void Location::updateDeath(bool died)
+{
+	recentDeath = died;
+}

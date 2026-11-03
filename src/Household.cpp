@@ -100,7 +100,7 @@ void Household::grieve()
 float Household::calculateNeeds(int baseNeed) 
 {
 	float tension = deathsWitnessed * 0.1;
-	needs = baseNeed + tension * tensionFactor * baseNeed;
+	needs = baseNeed + tension * tensionFactor * 0.1 * baseNeed;
 
 	return needs;
 }

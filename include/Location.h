@@ -71,6 +71,7 @@ public:
 	void calculateYield(int y, double Ha, double gen);
 
 	bool getDeath();
+	void updateDeath(bool died);
 };
 
 #endif

@@ -47,7 +47,7 @@ C_CXX_FLAGS =
 C_CXX_FLAGS += -O3
 
 # Config: RelWithDebInfo
-# C_CXX_FLAGS += -O3 -g
+ #C_CXX_FLAGS += -O3 -g
 
 # Config: Profile (for gprof)
 # C_CXX_FLAGS += -O3 -pg 
@@ -56,7 +56,7 @@ C_CXX_FLAGS += -O3
 # C_CXX_FLAGS += -O0
 
 # Config: Debug
-# C_CXX_FLAGS +=  -O0 -g
+ #C_CXX_FLAGS +=  -O0 -g
 # ----------------------
 
 # Enable a high level of warnings
