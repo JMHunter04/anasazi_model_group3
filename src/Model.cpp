@@ -574,13 +574,13 @@ void AnasaziModel::updateHouseholdProperties()
         }
         else
         {
-			needs = household->checkDeath(param.householdBaseNeed); //check death will update tension and new household need
+			float needs = household->calculateNeeds(param.householdBaseNeed); //check death will update tension and new household need
             if(household->fission(param.minFissionAge,param.maxFissionAge, fissionGen->next(), param.fertilityProbability))
             {
                 int rank = repast::RepastProcess::instance()->rank();
                 repast::AgentId id(houseID, rank, 2);
                 int mStorage = household->splitMaizeStored(param.maizeStorageRatio);
-                Household* newAgent = new Household(id, 0, deathAgeGen->next(), mStorage);
+                Household* newAgent = new Household(id, 0, deathAgeGen->next(), mStorage, tFact);
                 context.addAgent(newAgent);
 
                 std::vector<int> loc;
@@ -636,7 +636,7 @@ bool AnasaziModel::fieldSearch(Household* household)
 
 			if(tempLoc->getState() == 0)
 			{
-				float needs = household->calculateNeeds(param.householdBaseNeed)
+				float needs = household->calculateNeeds(param.householdBaseNeed);
 				if(tempLoc->getExpectedYield() >= )
 				{
 					std::vector<int> loc;
@@ -809,7 +809,7 @@ float AnasaziModel::checkDeath(Household* household)
 	int maxRange = std::max(maxRangeX, maxRangeY);
 
 	int range = 1;
-	int totalDeathsWitnessed = 0
+	int totalDeathsWitnessed = 0;
 	while(range <= maxRange)
 	{
 		neighbouringLocations.clear();
