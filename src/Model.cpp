@@ -580,6 +580,7 @@ void AnasaziModel::updateHouseholdProperties()
                 int rank = repast::RepastProcess::instance()->rank();
                 repast::AgentId id(houseID, rank, 2);
                 int mStorage = household->splitMaizeStored(param.maizeStorageRatio);
+				float tFact = initTensionGen->next();
                 Household* newAgent = new Household(id, 0, deathAgeGen->next(), mStorage, tFact);
                 context.addAgent(newAgent);
 
@@ -637,7 +638,7 @@ bool AnasaziModel::fieldSearch(Household* household)
 			if(tempLoc->getState() == 0)
 			{
 				float needs = household->calculateNeeds(param.householdBaseNeed);
-				if(tempLoc->getExpectedYield() >= )
+				if(tempLoc->getExpectedYield() >= needs)
 				{
 					std::vector<int> loc;
 					locationSpace->getLocation(tempLoc->getId(), loc);
@@ -840,7 +841,7 @@ float AnasaziModel::checkDeath(Household* household)
    		{
      		household->witnessDeath();
    		}
-	float needs = household->calculateNeeds(param.baseNeed);
+	float needs = household->calculateNeeds(param.householdBaseNeed);
 	return needs;
 	}
 }
