@@ -29,7 +29,7 @@ private:
 		int endYear;
 		int maxStorageYear;
 		int maxStorage;
-		int householdNeed;
+		int householdBaseNeed;
 		int minFissionAge;
 		int maxFissionAge;
 		int minDeathAge;
@@ -85,7 +85,7 @@ private:
 	repast::NormalGenerator* soilGen;// = repast::Random::instance()->createNormalGenerator(0,sqrt(0.1));
 	repast::IntUniformGenerator* initAgeGen;// = repast::Random::instance()->createUniIntGenerator(0,29);
 	repast::IntUniformGenerator* initMaizeGen;// = repast::Random::instance()->createUniIntGenerator(1000,1600);
-
+	repast::DoubleUniformGenerator* initTensionGen;// = ?
 
 public:
 	AnasaziModel(std::string propsFile, int argc, char** argv, boost::mpi::communicator* comm);

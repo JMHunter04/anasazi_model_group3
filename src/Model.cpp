@@ -556,7 +556,7 @@ void  AnasaziModel::updateLocationProperties()
 		}
 	}
 }
-s
+
 void AnasaziModel::updateHouseholdProperties()
 {
 	int noOfAgents = context.size();
@@ -636,7 +636,8 @@ bool AnasaziModel::fieldSearch(Household* household)
 
 			if(tempLoc->getState() == 0)
 			{
-				if(tempLoc->getExpectedYield() >= needs)
+				float needs = household->calculateNeeds(param.householdBaseNeed)
+				if(tempLoc->getExpectedYield() >= )
 				{
 					std::vector<int> loc;
 					locationSpace->getLocation(tempLoc->getId(), loc);
@@ -808,6 +809,7 @@ float AnasaziModel::checkDeath(Household* household)
 	int maxRange = std::max(maxRangeX, maxRangeY);
 
 	int range = 1;
+	int totalDeathsWitnessed = 0
 	while(range <= maxRange)
 	{
 		neighbouringLocations.clear();
@@ -824,7 +826,7 @@ float AnasaziModel::checkDeath(Household* household)
 
 			// Access attributes getter methods
 
-			Location* tempLoc = (&**it);
+			//Location* tempLoc = (&**it);
 			//might need “checkedLocations” stuff
 
 			if(tempLoc->getDeath() == 1){
@@ -838,6 +840,6 @@ float AnasaziModel::checkDeath(Household* household)
     {
         household->witnessDeath();
     }
-	needs = household->calculateNeeds(param.baseNeed);
+	float needs = household->calculateNeeds(param.baseNeed);
 	return needs;
 }
