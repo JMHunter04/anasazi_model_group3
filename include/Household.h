@@ -14,7 +14,7 @@ private:
 	int maizeStorage;
 	int age;
 	int deathAge;
-	int deathsWitnessed;
+	float deathsWitnessed;
 	float needs;
 	float tensionFactor;
 

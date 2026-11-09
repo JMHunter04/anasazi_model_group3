@@ -570,23 +570,25 @@ void AnasaziModel::updateHouseholdProperties()
         household = (*it);
         if(household->death()) 
         {
-			//make cell a recent death site
+			/* //make cell a recent death site - DEPRECATED
 			// gets grid coords
 			std::vector<int> houseIntLocation;
 			householdSpace->getLocation(household->getId(), houseIntLocation);
 			repast::Point<int> pt(houseIntLocation);
 
 			Location* currentLoc = locationSpace->getObjectAt(pt);
-			currentLoc->updateDeath(1); //make sure this can eventually be set back to zero !
-			removeHousehold(household);
+			//currentLoc->updateDeath(1); //make sure this can eventually be set back to zero !*/
+			radiusDeath(household);
+			removeHousehold(household); 
         }
             
 
 			
         else
         {
-			household->grieve(); // sets witnessedDeaths back by one
-			float needs = checkDeath(household);
+			
+			//float needs = checkDeath(household); DEPRECATED
+			float needs = household->calculateNeeds(param.householdBaseNeed);
             if(household->fission(param.minFissionAge,param.maxFissionAge, fissionGen->next(), param.fertilityProbability))
             {
                 int rank = repast::RepastProcess::instance()->rank();
@@ -614,6 +616,7 @@ void AnasaziModel::updateHouseholdProperties()
             }
             
         }
+		household->grieve(); // sets witnessedDeaths back by one
         it++;
     }
 }
@@ -633,7 +636,7 @@ bool AnasaziModel::fieldSearch(Household* household)
 	int maxRangeY = std::max(std::abs(houseIntLocation[1] - boardSizeY), houseIntLocation[1]);
 	int maxRange = std::max(maxRangeX, maxRangeY);
 
-	int range = 3;
+	int range = 1;
 	while(1)
 	{
 		moore2DQuery.query(houseIntLocation, range, false, neighbouringLocations);
@@ -869,4 +872,68 @@ float AnasaziModel::checkDeath(Household* household)
 
     float needs = household->calculateNeeds(param.householdBaseNeed);
     return needs;
+}
+
+void AnasaziModel::radiusDeath(Household* household)
+{
+    std::vector<int> houseIntLocation;
+    householdSpace->getLocation(household->getId(), houseIntLocation);
+
+    if (houseIntLocation.empty())
+    {
+        return;
+    }
+
+    repast::Point<int> center(houseIntLocation);
+
+    std::vector<Location*> neighbouringLocations;
+    std::vector<Location*> checkedLocations;
+    repast::Moore2DGridQuery<Location> moore2DQuery(locationSpace);
+
+    int maxRange = 6; 
+    int range = 1;
+
+    while(range <= maxRange)
+    {
+        neighbouringLocations.clear();
+        moore2DQuery.query(houseIntLocation, range, false, neighbouringLocations);
+
+        for (auto it = neighbouringLocations.begin(); it != neighbouringLocations.end(); ++it)
+        {
+            Location* loc = *it;
+            if (loc == nullptr)
+            {
+                continue;
+            }
+
+            if (std::find(checkedLocations.begin(), checkedLocations.end(), loc) != checkedLocations.end())
+            {
+                continue;
+            }
+            checkedLocations.push_back(loc);
+
+            std::vector<int> locCoords;
+            locationSpace->getLocation(loc->getId(), locCoords);
+            
+            if (locCoords.empty())
+            {
+                continue;
+            }
+
+            repast::Point<int> currentPoint(locCoords);
+
+            std::vector<Household*> householdList;
+            householdSpace->getObjectsAt(currentPoint, householdList);
+
+            for (Household* tempHouse : householdList)
+            {
+                if (tempHouse != nullptr)
+                {
+                    tempHouse->witnessDeath();
+                }
+            }
+        }
+        
+        range++; 
+    }
 }

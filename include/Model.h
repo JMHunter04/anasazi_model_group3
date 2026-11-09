@@ -107,6 +107,7 @@ public:
 	void removeHousehold(Household* household);
 	bool relocateHousehold(Household* household);
 	float checkDeath(Household* household);
+	void radiusDeath(Household* household);
 };
 
 #endif

@@ -85,7 +85,7 @@ void Household::chooseField(Location* Field)
 
 void Household::witnessDeath()
 {
-	if(deathsWitnessed <10){
+	if(deathsWitnessed <20){
 		deathsWitnessed++;
 	}
 }
@@ -93,14 +93,15 @@ void Household::witnessDeath()
 void Household::grieve()
 {
 	if(deathsWitnessed >0){
-		deathsWitnessed--;
+		deathsWitnessed = deathsWitnessed - 0.1;
 	}
 }
 
-float Household::calculateNeeds(int baseNeed) 
+float Household::calculateNeeds(int baseNeed)  // make this exponential, 1 neighbour dead is whatever, if 10 neighbours die im out 
 {
 	float tension = deathsWitnessed * 0.1;
-	needs = baseNeed + tension * tensionFactor * 2.2 * baseNeed; //changed to 2.5 genocide
+	needs = baseNeed + tension * tensionFactor * 2 * baseNeed; //changed to 2.5 genocide
+	std::cout << "A death has been witnessed. Variable value: " << tension << std::endl;
 
 	return needs;
 }
