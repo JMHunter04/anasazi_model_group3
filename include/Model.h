@@ -42,6 +42,9 @@ private:
 		double fertilityProbability;
 		double harvestAdjustment;
 		double maizeStorageRatio;
+		double tensionConstant;
+		int deathRad;
+		double deathDecay;
 	} param;
 
 	struct PDSI

@@ -89,6 +89,9 @@ AnasaziModel::AnasaziModel(std::string propsFile, int argc, char** argv, boost::
 	param.fertilityProbability = repast::strToDouble(props->getProperty("fertility.prop"));
 	param.harvestAdjustment = repast::strToDouble(props->getProperty("harvest.adj"));
 	param.maizeStorageRatio = repast::strToDouble(props->getProperty("new.household.ini.maize"));
+	param.tensionConstant = repast::strToDouble(props->getProperty("tension.constant"));
+	param.deathRad = repast::strToInt(props->getProperty("death.radius"));
+	param.deathDecay = repast::strToDouble(props->getProperty("death.decay"));
 
 	year = param.startYear;
 	stopAt = param.endYear - param.startYear + 1;
@@ -588,7 +591,7 @@ void AnasaziModel::updateHouseholdProperties()
         {
 			
 			//float needs = checkDeath(household); DEPRECATED
-			float needs = household->calculateNeeds(param.householdBaseNeed);
+			float needs = household->calculateNeeds(param.householdBaseNeed, param.tensionConstant);
             if(household->fission(param.minFissionAge,param.maxFissionAge, fissionGen->next(), param.fertilityProbability))
             {
                 int rank = repast::RepastProcess::instance()->rank();
@@ -616,7 +619,7 @@ void AnasaziModel::updateHouseholdProperties()
             }
             
         }
-		household->grieve(); // sets witnessedDeaths back by one
+		household->grieve(param.deathDecay); // sets witnessedDeaths back by one
         it++;
     }
 }
@@ -652,7 +655,7 @@ bool AnasaziModel::fieldSearch(Household* household)
 
 			if(tempLoc->getState() == 0)
 			{
-				float needs = household->calculateNeeds(param.householdBaseNeed);
+				float needs = household->calculateNeeds(param.householdBaseNeed, param.tensionConstant);
 				if(tempLoc->getExpectedYield() >= needs)
 				{
 					std::vector<int> loc;
@@ -870,7 +873,7 @@ float AnasaziModel::checkDeath(Household* household)
         household->witnessDeath();
     }
 
-    float needs = household->calculateNeeds(param.householdBaseNeed);
+    float needs = household->calculateNeeds(param.householdBaseNeed, param.tensionConstant);
     return needs;
 }
 
@@ -890,7 +893,7 @@ void AnasaziModel::radiusDeath(Household* household)
     std::vector<Location*> checkedLocations;
     repast::Moore2DGridQuery<Location> moore2DQuery(locationSpace);
 
-    int maxRange = 6; 
+    int maxRange = param.deathRad; 
     int range = 1;
 
     while(range <= maxRange)

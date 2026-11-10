@@ -35,8 +35,8 @@ public:
 	void nextYear(float needs);
 	void chooseField(Location* Field);
 	void witnessDeath();
-	void grieve();
-	float calculateNeeds(int baseNeed);
+	void grieve(float deathDecay);
+	float calculateNeeds(int baseNeed, float tensionConst);
 };
 
 #endif

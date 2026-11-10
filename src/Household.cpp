@@ -90,17 +90,17 @@ void Household::witnessDeath()
 	}
 }
 
-void Household::grieve()
+void Household::grieve(float deathDecay)
 {
 	if(deathsWitnessed >0){
-		deathsWitnessed = deathsWitnessed - 0.1;
+		deathsWitnessed = deathsWitnessed - deathDecay;
 	}
 }
 
-float Household::calculateNeeds(int baseNeed)  // make this exponential, 1 neighbour dead is whatever, if 10 neighbours die im out 
+float Household::calculateNeeds(int baseNeed, float tensionConst)  // make this exponential, 1 neighbour dead is whatever, if 10 neighbours die im out 
 {
-	float tension = deathsWitnessed * 0.1;
-	needs = baseNeed + tension * tensionFactor * 2 * baseNeed; //changed to 2.5 genocide
+	float tension = deathsWitnessed * 1;
+	needs = baseNeed + tension * exp(tensionFactor) * 0.1 *baseNeed; //changed to 2.5 genocide, trying exp.
 	std::cout << "A death has been witnessed. Variable value: " << tension << std::endl;
 
 	return needs;

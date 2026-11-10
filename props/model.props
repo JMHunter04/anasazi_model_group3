@@ -24,4 +24,8 @@ fertility.prop = 0.12666
 harvest.adj = 0.54484
 new.household.ini.maize = 0.33000
 
+tension.constant = 1
+death.radius = 7
+death.decay = 0.05
+
 result.file = NumberOfHousehold.csv
